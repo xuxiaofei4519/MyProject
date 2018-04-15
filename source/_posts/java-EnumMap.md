@@ -25,7 +25,12 @@ categories:
 
 ### 类定义
 {% codeblock lang:java %}
-public class EnumMap<K extends Enum<K>, V> extends AbstractMap<K, V> implements java.io.Serializable, Cloneable
+public class EnumMap<K extends Enum<K>, V> extends AbstractMap<K, V> implements java.io.Serializable, Cloneable{
+    private final Class<K> keyType;
+    private transient K[] keyUniverse;
+    private transient Object[] vals;
+    private transient int size = 0;
+}
 {% endcodeblock %}
 
 
