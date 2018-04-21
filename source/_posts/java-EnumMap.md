@@ -1,5 +1,6 @@
 ---
 title: EnumMap浅析
+date: 2018-04-19 14:40:09
 copyright: true
 tags:
  - java
@@ -148,6 +149,28 @@ private boolean isValidKey(Object key) {
 
 
 - 从上面代码可以看出，key通过数组下标映射数据，因此get数据的时候速度效率非常高。
+
+### remove方法解析
+
+{% codeblock lang:java %}
+public V remove(Object key) {
+    if (!isValidKey(key))
+        return null;
+    int index = ((Enum<?>)key).ordinal();
+    Object oldValue = vals[index];
+    vals[index] = null;
+    if (oldValue != null)
+        size--;
+    return unmaskNull(oldValue);
+}
+{% endcodeblock %}
+
+- 从上面代码可以看出,删除元素之前先对key进行验证，如果key不是map初始化时指定的枚举类型，那么将会返回null。
+- 当验证完key之后，再用该key在枚举类中的顺序号作为寻找value的下标，通过该下标将val数组中的值置空。如果value不为null的话，map的size就减1。
+- 最终将卸载NULL对象，返回删除的value。在remove操作中是不会删除key数组(keyUniverse[])中的任何元素。keyUniverse[]在类构造阶段已经初始化完毕，一直伴随着map的整个生命周期，直到该EnumMap被卸载。
+- 这里有一个问题需要注意，从代码中我们没有看到任何关于线程安全的代码，因此就会产生ABA的问题。当多线程环境下，很有可能发生当我们删除一个key的value时，value置空了，但是size--没有执行，这时候又有一个线程对相同的key进行put操作,我们获取的size大小就有可能不变,也有可能变大。产生脏读的情况。
+
+
 
 ### 使用方法
 
