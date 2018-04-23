@@ -93,7 +93,13 @@ public enum StatusConvert{
         this.start = start;
         this.target = target;
     }
+    /**
+     * 状态转换抽象方法
+     */
     abstract void todoConvertStatus();
+    /**
+     * 模板方法
+     */
     protected void doSomething(Action action){
         System.out.println("转换状态之前的操作");
         action.convertStatus();
