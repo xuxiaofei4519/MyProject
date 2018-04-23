@@ -194,7 +194,14 @@ public class Main {
 {% codeblock lang:java %}
 {SUCCESS=2, FAIL=3, DEALING=4, UNKNOWN=5}
 {% endcodeblock %}
-  
+
+
+###  使用场景
+状态机：根据老大的提示，周六在公司回顾EnumMap的时候，发现确实可以使用EmumMap作为状态机。状态机实现见：EnumMap状态机实现。
+
+分类场景：对于自己而言，更多的是数据分类场景，同一类的数据对应到同一个枚举，即枚举对应Map的形式。
+
+由于EnumMap并非线程安全，因此并不适合并发修改的场景。当然，也可以自定义将EnumMap封装成适用并发的Map类，这些都是后话了。
   
 ### 总结
 
