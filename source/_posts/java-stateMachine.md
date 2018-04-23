@@ -1,5 +1,5 @@
 ---
-title: EnumMap状态机实现
+title: 简单状态机实现,通过EnumMap收集所有转换状态。
 date: 2018-04-22 23:49:25
 copyright: true
 tags:
@@ -43,7 +43,10 @@ public interface Action {
 
 ### 状态转换枚举类
 {% codeblock lang:java %}
+
 public enum StatusConvert{
+
+
     /** 失败转换成成功 */
     FAIL_TO_SUCCESS(StatusDefine.FAILED,StatusDefine.SUCCESS){
         @Override
@@ -78,27 +81,49 @@ public enum StatusConvert{
             });
         }
     };
-    public static final EnumMap<StatusDefine, Map<StatusDefine, StatusConvert>> allStatus = new EnumMap<StatusDefine, Map<StatusDefine, StatusConvert>>(StatusDefine.class);
+
+    /**
+     * 状态转换集合
+     */
+    public static final EnumMap<StatusDefine, EnumMap<StatusDefine, StatusConvert>> ALL_STATUS = new EnumMap<StatusDefine, EnumMap<StatusDefine, StatusConvert>>(StatusDefine.class);
+
+
+    /**
+     * 当前状态
+     */
     private StatusDefine start;
+    /**
+     * 目标状态
+     */
     private StatusDefine target;
+
+    /**
+     * 初始化ALL_STATUS
+     */
     static {
         for (StatusDefine statusDefine : StatusDefine.values()){
-            allStatus.put(statusDefine,new EnumMap<StatusDefine, StatusConvert>(StatusDefine.class));
+            ALL_STATUS.put(statusDefine,new EnumMap<StatusDefine, StatusConvert>(StatusDefine.class));
         }
+
         for (StatusConvert statusConvert : StatusConvert.values()) {
-            allStatus.get(statusConvert.start).put(statusConvert.target, statusConvert);
+            ALL_STATUS.get(statusConvert.start).put(statusConvert.target, statusConvert);
         }
+
     }
+
     StatusConvert(StatusDefine start, StatusDefine target) {
         this.start = start;
         this.target = target;
     }
+
     /**
      * 状态转换抽象方法
      */
     abstract void todoConvertStatus();
+
     /**
      * 模板方法
+     * @param action
      */
     protected void doSomething(Action action){
         System.out.println("转换状态之前的操作");
@@ -112,16 +137,24 @@ public enum StatusConvert{
 ### 测试方法
 {% codeblock lang:java %}
 public static void main(String[] args) {
-    StatusConvert.allStatus.get(StatusDefine.FAILED).get(StatusDefine.SUCCESS).todoConvertStatus();
+    StatusConvert.ALL_STATUS.get(StatusDefine.FAILED).get(StatusDefine.SUCCESS).todoConvertStatus()
+    System.out.println("***************");
+    StatusConvert.DEALING_TO_SUCCESS.todoConvertStatus();
 }
 {% endcodeblock %}
 
 > 可以将上面的调用封装成一个静态的执行方法，在此由于方便理解，就不做封装了。
 
 ### 测试结果
-> 转换状态之前的操作
-  失败->成功
-  转换状态之后的操作
+{% codeblock lang:java %}
+转换状态之前的操作
+失败->成功
+转换状态之后的操作
+***************
+转换状态之前的操作
+处理中->成功
+转换状态之后的操作
+{% endcodeblock %}
 
 ### 总结
 
