@@ -15,17 +15,17 @@ categories:
 <!-- more -->
 
 
-### IdentityHashMap 继承类与实现接口
+### **IdentityHashMap 继承类与实现接口**
 
 ![截图](/image/java-IdentityHashmap/java-IdentityHashmap01.png)
 
 
-### IdentityHashMap 内部的方法
+### **IdentityHashMap 内部的方法**
 
 ![截图](/image/java-IdentityHashmap/java-IdentityHashmap02.png)
 
 
-### IdentityHashMap示例
+### **IdentityHashMap示例**
 
 - 示例
 {% codeblock lang:java %}
@@ -49,7 +49,7 @@ public void testIdentityHashMap(){
 {% endcodeblock %}
 > 从IdentityHashMap的继承关系可以看出IdentityHashMap并非继承于HashMap,而是兄弟关系，共同继承Map，从示例中我们也可以看出IdentitHashMap与HashMap的一大不同：IdentitHashMap允许"equals"为true的key同时存在,但不允许"=="为true的key同时存在。
 
-### IdentityHashMap 成员变量
+### **IdentityHashMap 成员变量**
 {% codeblock lang:java %}
 
 /**
@@ -90,7 +90,7 @@ static final Object NULL_KEY = new Object();
 > 从成员变量中可以看出IdentityHashMap数据结构就是一个Object数组,默认容量为32(这里是指存放的键值对数，后面init方法会有讲解),支持迭代器的快速失败,并且对null进行包装(区别put的是null还是原本是null)。
 
 
-### 核心方法解析
+### **核心方法解析**
 
 - init方法
 {% codeblock lang:java %}
@@ -196,8 +196,98 @@ public V put(K key, V value) {
 {% endcodeblock %}
 > 先根据hash值获取数组中的位置，然后往后判断是否存在和引用相等的key，如果存在则替换value，返回旧值。终止条件为当前key是null(注意并不是NULL_KEY)
 > 如果没有找到相等引用，那么就停止循环，循环后table[i]一定是null的(循环过程中i一直在变)，这时进行插入操作，在插入操作之前判断是否需要扩容。
-> 上面s + (s << 1) = s + (s * 2) = s(1=2) = 3s > len,也就是说当键值对的数目大于表长的三分之一的时候就会进行扩容
+> 上面s + (s << 1) = s + (s * 2) = s(1=2) = 3s > len,也就是说当键值对的个数大于表长的三分之一的时候就会进行扩容
+
+- get方法
+{% codeblock lang:java %}
+@SuppressWarnings("unchecked")
+public V get(Object key) {
+    Object k = maskNull(key);
+    Object[] tab = table;
+    int len = tab.length;
+    int i = hash(k, len);
+    while (true) {
+        Object item = tab[i];
+        if (item == k)
+            return (V) tab[i + 1];
+        if (item == null)
+            return null;
+        i = nextKeyIndex(i, len);
+    }
+}
+{% endcodeblock %}
+> 先检查key是否是null,然后对key哈希取值确定索引，如果没有找到，就到下一个key，直到为key为null为止。
 
 
 
+- closeDeletion方法
+{% codeblock lang:java %}
+private void closeDeletion(int d) {
+    // Adapted from Knuth Section 6.4 Algorithm R
+    Object[] tab = table;
+    int len = tab.length;
 
+    // Look for items to swap into newly vacated slot
+    // starting at index immediately following deletion,
+    // and continuing until a null slot is seen, indicating
+    // the end of a run of possibly-colliding keys.
+    Object item;
+    for (int i = nextKeyIndex(d, len); (item = tab[i]) != null;
+         i = nextKeyIndex(i, len) ) {
+        // The following test triggers if the item at slot i (which
+        // hashes to be at slot r) should take the spot vacated by d.
+        // If so, we swap it in, and then continue with d now at the
+        // newly vacated i.  This process will terminate when we hit
+        // the null slot at the end of this run.
+        // The test is messy because we are using a circular table.
+        int r = hash(item, len);
+        if ((i < r && (r <= d || d <= i)) || (r <= d && d <= i)) {
+            tab[d] = item;
+            tab[d + 1] = tab[i + 1];
+            tab[i] = null;
+            tab[i + 1] = null;
+            d = i;
+        }
+    }
+}   
+{% endcodeblock %}
+> 删除后,将后面的键值对向前调整,防止找不到key的情况发生。if条件判断该key是否发生hash碰撞，只要发生过碰撞,就会往前移动。
+
+
+
+- remove方法
+{% codeblock lang:java %}
+public V remove(Object key) {
+    Object k = maskNull(key);
+    Object[] tab = table;
+    int len = tab.length;
+    int i = hash(k, len);
+
+    while (true) {
+        Object item = tab[i];
+        if (item == k) {
+            modCount++;
+            size--;
+            @SuppressWarnings("unchecked")
+                V oldValue = (V) tab[i + 1];
+            tab[i + 1] = null;
+            tab[i] = null;
+            closeDeletion(i);
+            return oldValue;
+        }
+        if (item == null)
+            return null;
+        i = nextKeyIndex(i, len);
+    }
+}
+{% endcodeblock %}
+> 获取对应key然后hash取值,将对应key删除,并且通过closeDeletion方法对后面的键值对向前做调整
+
+
+
+### **总结**
+
+> 1、IdentityHashMap 是通过引用来判断键是否相等的，并且允许null值和null键、允许重复键的Map容器。 
+  2、IdentityHashMap 解决哈希冲突的方式是采用线性探测法即往后寻找为null的槽位
+  3、IdentityHashMap 默认的初始容量为 32 ，扩容每次扩为原来的两倍。
+  4、IdentityHashMap 每一次做删除操作都会调整一次map
