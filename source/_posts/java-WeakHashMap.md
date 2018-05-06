@@ -248,7 +248,7 @@ private static class Entry<K,V> extends WeakReference<Object> implements Map.Ent
 
 
 ### **总结**
-> WeakHashMap和hashMap相似,内部都是维护了hash表和链表表。不同的是WeakHashMap链表中的Entry继承了弱引用，当外部强引用失效后，weakHashMap对应的键值对也会失效。
+> WeakHashMap和hashMap相似,内部都是维护了hash表和链表。不同的是WeakHashMap链表中的Entry继承了弱引用，当外部强引用失效后，weakHashMap对应的键值对也会失效。
 > 因此WeakHashMap适合存储元素经常发生变化的数据,可以防止发生强引用导致的内存泄漏。
 
 
