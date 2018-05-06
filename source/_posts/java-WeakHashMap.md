@@ -26,7 +26,7 @@ categories:
 
 
 ### 成员变量
-```
+{% codeblock lang:java %}
 /**
  * 默认初始容量
  */
@@ -80,12 +80,12 @@ private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
  */
 int modCount;
 
-```
+{% endcodeblock %}
 
 ### **核心方法解析**
 
 - 构造方法
-```
+{% codeblock lang:java %}
 public WeakHashMap(int initialCapacity, float loadFactor) {
     if (initialCapacity < 0)
         throw new IllegalArgumentException("Illegal Initial Capacity: "+
@@ -103,11 +103,11 @@ public WeakHashMap(int initialCapacity, float loadFactor) {
     this.loadFactor = loadFactor;
     threshold = (int)(capacity * loadFactor);
 }
-```
-> 判断是否指定容量大小是否是在正常范围,然后计算容量大小并初始化数组,并给threshold赋值(计算触发下一次扩容时的容量大小)
+{% endcodeblock %}
+>判断是否指定容量大小是否是在正常范围,然后计算容量大小并初始化数组,并给threshold赋值(计算触发下一次扩容时的容量大小)
 
 - put方法
-```
+{% codeblock lang:java %}
 public V put(K key, V value) {
     Object k = maskNull(key);
     int h = hash(k);
@@ -130,12 +130,12 @@ public V put(K key, V value) {
         resize(tab.length * 2);
     return null;
 }
-```
-> 计算hash值,根据hash值计算数组的索引值,遍历Entry链表，查看是否有相等的key存在，相等替换对应值。如果key不相等，添加键值对。如果超过扩容边界值，那么将重新扩容。
+{% endcodeblock %}
+>计算hash值,根据hash值计算数组的索引值,遍历Entry链表，查看是否有相等的key存在，相等替换对应值。如果key不相等，添加键值对。如果超过扩容边界值，那么将重新扩容。
 
 
 - get方法
-```
+{% codeblock lang:java %}
 public V get(Object key) {
     Object k = maskNull(key);
     int h = hash(k);
@@ -149,12 +149,12 @@ public V get(Object key) {
     }
     return null;
 }
-```
-> 原理和put方法类似,根据key的hash值计算数组索引，遍历链表,找到相等key获取value并返回
+{% endcodeblock %}
+>原理和put方法类似,根据key的hash值计算数组索引，遍历链表,找到相等key获取value并返回
 
 
 - remove方法
-```
+{% codeblock lang:java %}
 public V remove(Object key) {
     Object k = maskNull(key);
     int h = hash(k);
@@ -180,12 +180,12 @@ public V remove(Object key) {
 
     return null;
 }
-```
+{% endcodeblock %}
 > 根据key的hash值计算索引值,然后遍历单向链表判断相等的key,如果key相等将前一个键值对直接指向下一个键值对，这样就过掉了当前的键值对。上面prev==e 是为了判断当key和链表中的第一个Entry就相等的话，直接将tab[i]赋值成下一个元素
 
 
 - Entry实现
-```
+{% codeblock lang:java %}
 private static class Entry<K,V> extends WeakReference<Object> implements Map.Entry<K,V> {
     V value;
     final int hash;
@@ -243,7 +243,7 @@ private static class Entry<K,V> extends WeakReference<Object> implements Map.Ent
         return getKey() + "=" + getValue();
     }
 }
-```
+{% endcodeblock %}
 > 因为WeakHashMap中的Entry都是弱引用,所以一旦weakhashmap外的强引用断掉，那么这个对象就会被回收，weakhashMap指向该对象的引用也会失效。
 
 
@@ -253,9 +253,9 @@ private static class Entry<K,V> extends WeakReference<Object> implements Map.Ent
 
 
 ### **注意**
-> 常亮数据存储在WeakHashMap中，无论其外部key的引用是否为null,都不会在weakhashMap中被清除，只有手动remove才会被清除,例如下面的示例
+> 常量数据存储在WeakHashMap中，无论其外部key的引用是否为null,都不会在weakhashMap中被清除，只有手动remove才会被清除,例如下面的示例
 
-```
+{% codeblock lang:java %}
 @Test
 public void testWeakHashMap(){
 
@@ -272,5 +272,5 @@ public void testWeakHashMap(){
     System.gc();
     System.out.println(weakHashMap);
 }
-```
-> String a1 = "a1" 是存储在常亮池中的 即使a1=null, weakHashMap中的a1键值对还是会存在，因为a1引用的指向的内存区域数据还是存在，通俗讲就是a1指向的是常亮池，GC不会回收常量池中的内容。所以weakHashMap不会影响指向常量数据的引用。
+{% endcodeblock %}
+> String a1 = "a1" 是存储在常量池中的 即使a1=null, weakHashMap中的a1键值对还是会存在，因为a1引用的指向的内存区域数据还是存在，通俗讲就是a1指向的是常量池，GC不会回收常量池中的内容。所以weakHashMap不会影响指向常量数据的引用。
