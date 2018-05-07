@@ -259,18 +259,18 @@ private static class Entry<K,V> extends WeakReference<Object> implements Map.Ent
 @Test
 public void testWeakHashMap(){
 
-    WeakHashMap weakHashMap = new WeakHashMap();
-    String a1 = "a1";
-    String a2 = "a2";
-    String a3 = new String("a3");
-    weakHashMap.put(a1 ,"a1");
-    weakHashMap.put(a2, "a2");
-    weakHashMap.put(a3, "a3");
-    System.out.println(weakHashMap);
+WeakHashMap weakHashMap = new WeakHashMap();
+String a1 = "a1";
+String a2 = "a2";
+String a3 = new String("a3");
+weakHashMap.put(a1 ,"a1");
+weakHashMap.put(a2, "a2");
+weakHashMap.put(a3, "a3");
+System.out.println(weakHashMap);
 
-    a3 = null;
-    System.gc();
-    System.out.println(weakHashMap);
+a3 = null;
+System.gc();
+System.out.println(weakHashMap);
 }
 {% endcodeblock %}
 > String a1 = "a1" 是存储在常量池中的 即使a1=null, weakHashMap中的a1键值对还是会存在，因为a1引用的指向的内存区域数据还是存在，通俗讲就是a1指向的是常量池，GC不会回收常量池中的内容。所以weakHashMap不会影响指向常量数据的引用。

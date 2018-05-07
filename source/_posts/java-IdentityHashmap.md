@@ -112,7 +112,7 @@ private static int hash(Object x, int length) {
     return ((h << 1) - (h << 8)) & (length - 1);
 }
 {% endcodeblock %}
-> identityHashCode是一个Native方法,是根据对象的内存地址来计算hash值的。并且应为length一定是2的n次方,所以减1后和任何数相与得到的永远是偶数，所以key一定是存放在偶数位
+> identityHashCode是一个Native方法,是根据对象的内存地址来计算hash值的。并且length一定是2的n次方,所以减1后和任何数相与得到的永远是偶数，所以key一定是存放在偶数位
 
 - nextKeyIndex方法
 {% codeblock lang:java %}
