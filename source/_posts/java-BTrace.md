@@ -31,6 +31,15 @@ categories:
 - 追踪结果
  ![截图](/image/java-BTrace/java-BTrace05.png)
  
+
+### BTrace相关API含义
+#### 追踪时机
+- Kind.ENTRY  默认拦截方式，入口拦截
+- Kind.RETURN 拦截返回值
+- Kind.THROW 发生异常时拦截
+- Kind.LINE 拦截某一行
+- Kind.Call 被调用时拦截
+ 
 ### BTrace使用限制
 - 不能创建对象
 - 不能创建数组
