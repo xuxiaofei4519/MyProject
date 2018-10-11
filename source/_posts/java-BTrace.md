@@ -25,7 +25,7 @@ categories:
  
 ### BTrace实战
 - 测试用例(间隔一秒打印当前时间戳)
- {% qnimg /java-BTrace/java-BTrace03.png}
+ {% qnimg /java-BTrace/java-BTrace03.png %}
 - 追踪脚本
  {% qnimg /java-BTrace/java-BTrace04.png %}
 - 追踪结果
