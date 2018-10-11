@@ -16,12 +16,11 @@ categories:
 <!-- more -->
 
 ### EnumMap的继承类与实现接口
-
-![截图](/image/java-EnumMap/java-EnumMap01.png)
+{% qnimg /java-EnumMap/java-EnumMap01.png %}
 
 
 ### EnumMap内部的方法
-![截图](/image/java-EnumMap/java-EnumMap02.png)
+{% qnimg /java-EnumMap/java-EnumMap02.png %}
 
 
 ### 类定义

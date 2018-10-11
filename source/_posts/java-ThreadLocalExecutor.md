@@ -1,11 +1,10 @@
----
 title: ThreadLocalExecutor解析
-date: 2018-08-12 20:33:38
 copyright: true
 tags:
- - java
+  - java
 categories:
- - java
+  - java
+date: 2018-08-12 20:33:00
 ---
 
 {% cq %}

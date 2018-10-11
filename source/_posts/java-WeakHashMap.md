@@ -16,13 +16,9 @@ categories:
 
 
 ### **IdentityHashMap 继承类与实现接口**
-
-![截图](/image/java-WeakHashMap/map01.png)
-
-
+{% qnimg /java-WeakHashMap/map01.png %}
 ### **IdentityHashMap 内部的方法**
-
-![截图](/image/java-WeakHashMap/map02.png)
+{% qnimg /java-WeakHashMap/map02.png %}
 
 
 ### 成员变量

@@ -19,17 +19,17 @@ categories:
 ### BTrace安装
 - 首先下载[release](https://github.com/btraceio/btrace)版本
 - 配置环境变量
- ![截图](/image/java-BTrace/java-BTrace01.png)
+ {% qnimg /java-BTrace/java-BTrace01.png %}
 - 验证是否安装成功
- ![截图](/image/java-BTrace/java-BTrace02.png)
+ {% qnimg /java-BTrace/java-BTrace02.png %}
  
 ### BTrace实战
 - 测试用例(间隔一秒打印当前时间戳)
- ![截图](/image/java-BTrace/java-BTrace03.png)
+ {% qnimg /java-BTrace/java-BTrace03.png}
 - 追踪脚本
- ![截图](/image/java-BTrace/java-BTrace04.png)
+ {% qnimg /java-BTrace/java-BTrace04.png %}
 - 追踪结果
- ![截图](/image/java-BTrace/java-BTrace05.png)
+ {% qnimg /java-BTrace/java-BTrace05.png %}
  
 
 ### BTrace相关API含义

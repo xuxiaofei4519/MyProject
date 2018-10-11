@@ -17,12 +17,10 @@ categories:
 
 ### **IdentityHashMap 继承类与实现接口**
 
-![截图](/image/java-IdentityHashmap/java-IdentityHashmap01.png)
-
-
+{% qnimg /java-IdentityHashmap/java-IdentityHashmap01.png %}
 ### **IdentityHashMap 内部的方法**
 
-![截图](/image/java-IdentityHashmap/java-IdentityHashmap02.png)
+{% qnimg /java-IdentityHashmap/java-IdentityHashmap02.png %}
 
 
 ### **IdentityHashMap示例**
