@@ -1,5 +1,8 @@
 ## AQS实现之ReentrantLock的公平锁模式
-[TOC]
+{% cq %} 
+之前阅读javadoop的文章，根据自己的理解对ReentrantLock进行解析
+{% endcq %}
+
 #### 流程图：
 {% qnimg /java-AQS-01/AQS_01.jpg %}
 * * *
