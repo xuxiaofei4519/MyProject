@@ -1,7 +1,16 @@
-## AQS实现之ReentrantLock的公平锁模式
+---
+title: AQS实现之ReentrantLock的公平锁模式
+date: 2018-10-15 20:40:09
+copyright: true
+tags:
+ - java
+categories:
+ - java
+---
 {% cq %} 
 之前阅读javadoop的文章，根据自己的理解对ReentrantLock进行解析
 {% endcq %}
+<!-- more -->
 
 #### 流程图：
 {% qnimg /java-AQS-01/AQS_01.jpg %}
