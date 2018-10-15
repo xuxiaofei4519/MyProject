@@ -78,22 +78,22 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 
-#deploy:
-#  type: git
-#  repo: https://github.com/xuxiaofei4519/xuxiaofei4519.github.io.git
-#  branch: master
-
-
 deploy:
-  type: ftpsync
-  host: 47.95.250.49
-  user: root
-  pass: Xuxiaofei451988
-  remote: /root/blog/
-  port: 21
-  ignore:
-  connections: 1
-  verbose: true
+  type: git
+  repo: https://github.com/xuxiaofei4519/xuxiaofei4519.github.io.git
+  branch: master
+
+
+#deploy:
+#  type: ftpsync
+#  host: 47.95.250.49
+#  user: root
+#  pass: Xuxiaofei451988
+#  remote: /root/blog/
+#  port: 21
+#  ignore:
+#  connections: 1
+#  verbose: true
 
 #plugins:
 # - hexo-qiniu-sync
