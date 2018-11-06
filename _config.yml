@@ -78,22 +78,15 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 
+#deploy:
+#  type: git
+#  repo: https://github.com/xuxiaofei4519/xuxiaofei4519.github.io.git
+#  branch: master
 deploy:
   type: git
-  repo: https://github.com/xuxiaofei4519/xuxiaofei4519.github.io.git
+  repo:  git@47.95.250.49:/home/git/hexo.git
   branch: master
 
-
-#deploy:
-#  type: ftpsync
-#  host: 47.95.250.49
-#  user: root
-#  pass: Xuxiaofei451988
-#  remote: /root/blog/
-#  port: 21
-#  ignore:
-#  connections: 1
-#  verbose: true
 
 #plugins:
 # - hexo-qiniu-sync
@@ -108,7 +101,7 @@ qiniu:
   # 上传的资源子目录前缀.如设置，需与urlPrefix同步
   dirPrefix: static
   # 外链前缀
-  urlPrefix: http://pgfhhwpjv.bkt.clouddn.com/static
+  urlPrefix: http://qiniuyun.xanderxu.cn/static
   # 使用默认配置即可
   up_host: http://upload.qiniu.com
   # 本地目录
