@@ -415,8 +415,8 @@ gitment:
   language: # Force language, or auto switch by theme
   github_user: xuxiaofei4519
   github_repo: xuxiaofei4519.github.io
-  client_id: 60d399f49b8cd8bc9a31
-  client_secret: 89256e7bfaaa7d48f0b65ef431b2b0664edb632f
+  client_id: 42cec05c7f41a18d4eef
+  client_secret: d3e51940f8972985bf04e48eef0a9d3d20652f21
   proxy_gateway: # Address of api proxy, See: https://github.com/aimingoo/intersect
   redirect_protocol: # Protocol of redirect_uri with force_redirect_protocol when mint enabled
 
