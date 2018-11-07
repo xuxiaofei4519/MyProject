@@ -414,7 +414,7 @@ gitment:
   cleanly: false # Hide 'Powered by ...' on footer, and more
   language: # Force language, or auto switch by theme
   github_user: xuxiaofei4519
-  github_repo: xuxiaofei4519.github.io
+  github_repo: https://github.com/xuxiaofei4519/xuxiaofei4519.github.io.git
   client_id: 42cec05c7f41a18d4eef
   client_secret: d3e51940f8972985bf04e48eef0a9d3d20652f21
   proxy_gateway: # Address of api proxy, See: https://github.com/aimingoo/intersect
