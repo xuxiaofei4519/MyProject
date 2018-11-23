@@ -88,7 +88,8 @@ public class Client {
 ##### SafeListener类
 ```java
 public class SafeListener {  
-  
+    //这里使用final来保证成员变量的值不变，保证匿名内部类和外部环境局部变量保持同步,
+    //也就是不允许对EventListener修改,保证构造过程中的安全问题。
     private final EventListener listener;  
     private String              name = null;  
   
