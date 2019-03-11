@@ -17,10 +17,22 @@ categories:
 
 * * *
 
->以下代码纯手动实现，如有问题，及时留言。
+>以下代码纯手动实现，根据数据结构与算法分析第三版第四章AVL树讲解实现
 
 #### 手动实现源码
 ```java
+package com.BalanceTree;
+
+
+import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
+import lombok.Data;
+import lombok.val;
+import org.junit.Test;
+import org.springframework.util.StringUtils;
+import sun.util.locale.provider.AvailableLanguageTags;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * 平衡二叉树 AVL实现
  */
@@ -29,14 +41,13 @@ public class AVLBalanceTree {
     //根节点
     private AVLNode root;
     //节点数
-    private Integer size;
+    private volatile AtomicInteger size = new AtomicInteger();
+
+    private static final int ALLOW_HEIGHT = 1;
 
     public AVLBalanceTree() {
     }
 
-    public AVLBalanceTree(AVLNode root) {
-        this.root = root;
-    }
 
 
     /**
@@ -49,14 +60,9 @@ public class AVLBalanceTree {
         //节点高度
         private Integer height;
         //左子节点
-        private AVLNode leftNode;
+        public AVLNode leftNode;
         //右子节点
-        private AVLNode rightNode;
-
-        public AVLNode(Integer value) {
-            //新节点的高度默认是0
-            new AVLNode(value,0,null,null);
-        }
+        public AVLNode rightNode;
 
         public AVLNode(Integer value, Integer height, AVLNode leftNode, AVLNode rightNode) {
             this.value = value;
@@ -67,6 +73,8 @@ public class AVLBalanceTree {
 
     }
 
+
+
     /**
      * 插入操作
      * @param value  插入值为Integer类型
@@ -74,21 +82,22 @@ public class AVLBalanceTree {
     public void insert(Integer value) throws Exception {
         if (null == this.root){
             initRoot(value);
-            size++;
+            size.incrementAndGet();
             return;
         }
-        if (!constains(value))
+        if (constains(value)) {
             throw new Exception("该值已经存在");
-
-
+        }
+        root = insert(root, value);
     }
 
     /**
      * 初始化根节点
      */
-    private void initRoot(Integer value){
-        this.root = new AVLNode(value);
+    private AVLNode initRoot(Integer value){
+        this.root = new AVLNode(value, 0, null,null);
         System.out.println("root:" + this.root.getValue());
+        return root;
     }
 
 
@@ -99,9 +108,9 @@ public class AVLBalanceTree {
      */
     private boolean constains(Integer val){
         AVLNode currentNode = root;
-        if (null == currentNode)
+        if (null == currentNode) {
             return false;
-
+        }
         while (null != currentNode){
             if (val > currentNode.getValue()){
                 currentNode = currentNode.getRightNode();
@@ -111,8 +120,38 @@ public class AVLBalanceTree {
                 return true;
             }
         }
-
         return false;
+    }
+
+    /**
+     * 重新平衡
+     */
+    private AVLNode reBalance(AVLNode parent){
+        if (parent == null){
+            return parent;
+        }
+        //在每一个递归层级上都要进行节点的平衡判断
+        // 判断parent节点左右儿子节点的高度。看看是否大于允许值
+        if (height(parent.leftNode) - height(parent.rightNode) > ALLOW_HEIGHT){
+            // 左孙子节点高度>=右节点高度  (有可能删除导致左右孙子节点高度相同)
+            if (height(parent.leftNode.leftNode) >=  height(parent.leftNode.rightNode)){
+                parent = rotateWithLeft(parent);
+            }else {
+                parent = leftRightRotate(parent);
+            }
+        }else if (height(parent.rightNode) - height(parent.leftNode) > ALLOW_HEIGHT){
+            // 判断parent节点左右儿子节点的高度。看看是否大于允许值
+
+            // 右孙子节点高度>=左节点高度  (有可能删除导致左右孙子节点高度相同)
+            if (height(parent.rightNode.rightNode) >=  height(parent.rightNode.leftNode)){
+                parent = rotateWithRight(parent);
+            }else {
+                parent = rightLeftRotate(parent);
+            }
+        }
+        // 重新计算当前节点的高度
+        parent.setHeight(Math.max(height(parent.getLeftNode()), height(parent.getRightNode())) + 1);
+        return parent;
     }
 
     /**
@@ -120,167 +159,97 @@ public class AVLBalanceTree {
      */
     private AVLNode insert(AVLNode parent,Integer val){
         if (parent == null){
+            size.incrementAndGet();
             return createSimpleNode(val);
         }
-
         if (val < parent.getValue()){
-            parent.setLeftNode(insert(parent.getLeftNode(), val));
-
-            //在每一个递归层级上都要进行节点的平衡判断
-            // 左子节点添加节点，左子节点高度减去右子节点高度来判断是否平衡。仔细思考不可能出现负值
-            if (height(parent.getLeftNode()) - height(parent.getRightNode()) > 1){
-                //使用parent的左节点与val进行比较，从而判断val被放在了parent左节点的左边还是右边，根据位置不同进行不同的旋转。
-                Integer compareVal = parent.getLeftNode().getValue();
-
-
-                if (val < compareVal){ // val相当于第三个节点并且比parent的左节点(第二个节点)小的话就会进行左左旋转
-                    leftLeftRotate(parent);
-                }else { // val相当于第三个节点并且比parent左节点(第二个节点)大的话就会进行左右旋转
-                    leftRightRotate(parent);
-                }
-            }
+            parent.leftNode = insert(parent.leftNode, val);
+        }else if (val > parent.getValue()){
+            parent.rightNode = insert(parent.rightNode, val);
+        }else {
+            // do nothing
         }
-        if (val > parent.getValue()){
-            parent.setRightNode(insert(parent.getRightNode(), val));
-            // 右子节点添加节点，右子节点高度减去左子节点高度来判断是否平衡。仔细思考不可能出现负值
-            if (height(parent.getRightNode()) - height(parent.getLeftNode()) > 1){
-                //使用parent的左节点与val进行比较，从而判断val被放在了parent左节点的左边还是右边，根据位置不同进行不同的旋转。
-                Integer compareVal = parent.getRightNode().getValue();
+        return reBalance(parent);
+    }
 
-
-                if (val > compareVal){  // val相当于第三个节点并且比parent的左节点(第二个节点)小的话就会进行左左旋转
-                    rightRightRotate(parent);
-                }else { // val相当于第三个节点并且比parent左节点(第二个节点)大的话就会进行左右旋转
-                    rightLeftRotate(parent);
-                }
-            }
+    public boolean remove(Integer value) throws Exception {
+        if (this.root == null){
+            return false;
+        }
+        if (!constains(value)) {
+            throw new Exception("该值不存在");
         }
 
-        /**
-         * 插入成功以后都要递归将parent的节点高度加1
-         */
-        parent.setHeight(maxHeight(parent.getLeftNode(), parent.getRightNode()) + 1);
-        return parent;
+        root = remove(root, value);
+        return true;
     }
 
     public AVLNode remove(AVLNode parent, Integer val){
-        if (val < parent.getValue()){
-            //递归左节点
-            parent.setLeftNode(remove(parent.getLeftNode(), val));
-            //重新计算当前节点高度
-            parent.setHeight(maxHeight(parent.getLeftNode(), parent.getRightNode()) + 1);
-            //只有左节点的高度低于右节点的高度的时候，删除左节点会导致不平衡。左节点比右节点最多高1，因此不可能出现负值。
-            if (height(parent.getRightNode()) - height(parent.getLeftNode()) > 1){
-                //进入到该if条件说明删除左节点后，右节点高度变高。parent节点失衡
-
-                //获取parent的右节点
-                AVLNode tempNode = parent.getRightNode();
-                if (height(tempNode.getLeftNode()) > height(tempNode.getRightNode())){
-                    rightLeftRotate(parent);
-                }else {
-                    rightRightRotate(parent);
-                }
-            }
-            //因为是删除左节点，调整右节点因此高度不用++
-        }else if (val > parent.getValue()){
-            //遍历右子树
-            parent.setRightNode(remove(parent.getRightNode(), val));
-            //重新计算当前节点高度
-            parent.setHeight(maxHeight(parent.getLeftNode(), parent.getRightNode()) + 1);
-            //右节点
-            if (height(parent.getLeftNode()) - height(parent.getRightNode()) > 1){
-                //进入到该if条件说明删除右节点后，左节点高度变高。parent节点失衡
-
-                //获取parent的左节点
-                AVLNode tempNode = parent.getLeftNode();
-                if (height(tempNode.getRightNode()) > height(tempNode.getLeftNode())){
-                    leftRightRotate(parent);
-                }else {
-                    leftLeftRotate(parent);
-                }
-            }
-            //因为是删除右节点，调整左节点因此高度不用++
-        }else {
-            //找到该节点，匹配成功
-
-            //如果该节点的左右子节点都不为空
-            if (parent.getLeftNode() != null && parent.getRightNode() != null){
-                // 选择替代节点的条件：
-                // 1.小于parent(即将被删除)节点，大于parent(即将被删除)左树节点中任意节点.
-                // 2.大于parent(即将被删除)节点，小于parent(即将被删除)右树节点中任意节点。
-                // 满足上述任意条件即可吗，那么就是选择删除左树和右树节点的问题了。为了平衡，左树，右树哪个高度最高就从中选择替代节点。
-                // 步骤：
-                //    先查找满足条件的节点赋值给替代节点保留，然后删除左树或右树中的该节点，设置替代节点的左右节点，重新计算左右节点高度，
-                //    返回给外部(上一层级)递归层级，外部递归层级中会将该重新赋值为替代节点。
-
-
-
-                if (height(parent.getLeftNode()) > height(parent.getRightNode())){
-                    //要删除节点即parent，如果它的左节点的高度>右节点高度，那就选出左树节点最大的节点作为parent节点的替代节点，
-                    //该替代节点(maxNode)一定小于要被删除的节点(parent)。正好满足替代条件
-
-                    //获取替代节点并保留
-                    AVLNode maxValue = getMaxNode(parent.getLeftNode());
-                    //递归删除左树中的替代节点
-                    parent.setLeftNode(remove(parent.getLeftNode(), maxValue.getValue()));
-                    //设置替代节点的左右节点为parent的左右节点
-                    maxValue.setLeftNode(parent.getLeftNode());
-                    maxValue.setRightNode(parent.getRightNode());
-                    //重新计算替代节点的高度
-                    maxValue.setHeight(maxHeight(parent.getLeftNode(), parent.getRightNode()) + 1);
-                    //返回给外部递归层级
-                    return maxValue;
-                }else {
-                    //要删除节点即parent，如果它的左节点的高度<=右节点高度，那就选出右树节点最小的节点作为parent节点的替代节点，
-                    //该替代节点(minNode)一定大于要被删除的节点(parent)。正好满足替代条件
-
-                    //获取替代节点并保留
-                    AVLNode minValue = getMinNode(parent.getRightNode());
-                    //递归删除右树中的替代节点
-                    parent.setRightNode(remove(parent.getRightNode(), minValue.getValue()));
-                    //设置替代节点的左右节点为parent的左右节点
-                    minValue.setLeftNode(parent.getLeftNode());
-                    minValue.setRightNode(parent.getRightNode());
-                    //重新计算替代节点的高度
-                    minValue.setHeight(maxHeight(parent.getLeftNode(), parent.getRightNode()) + 1);
-                    //返回给外部递归层级
-                    return minValue;
-                }
-            }else {
-                // 如果左右节点中有任意一个为空
-                if (parent.getLeftNode() != null || parent.getRightNode() != null) {
-                    parent = parent.getLeftNode() == null ? parent.getRightNode() : parent.getLeftNode();
-                }else {
-                    parent = null;
-                }
-            }
+        if (val == null){
+            return parent;
         }
+        if (val < parent.getValue()){
+            parent.leftNode = remove(parent.getLeftNode(), val);
+        }else if (val > parent.getValue()){
+            parent.rightNode = remove(parent.getRightNode(), val);
+        }else if (parent.getLeftNode() != null && parent.getRightNode() != null){
+            // 因为要删除的parent节点，但是左右子节点都不为null，就取右子树最小节点的值作为parent的值
+            parent.setValue(getMinNode(parent.getRightNode()).getValue());
+            // 重新设置右节点
+            parent.rightNode = remove(parent.getRightNode(), parent.getValue());
+        }else {
+            // 要删除节点有一个节点是空的，因此
+            parent = (parent.getLeftNode() != null) ? parent.getLeftNode() : parent.getRightNode();
+        }
+        // 再平衡
+        return reBalance(parent);
+    }
 
-        return parent;
+
+    public void print() throws Exception {
+        if (this.root != null){
+            printALL(this.root);
+        }
+    }
+
+
+    /**
+     * 打印所有
+     */
+    public void printALL(AVLNode node) {
+        if (node != null){
+            printALL(node.leftNode);
+            System.out.println(node.value);
+            printALL(node.rightNode);
+        }
     }
 
     /**
      * 获取值最大节点
      */
     private AVLNode getMaxNode(AVLNode currentNode){
-        if (currentNode != null){
-            currentNode = getMaxNode(currentNode.getRightNode());
+        if (currentNode == null){
+            return null;
+        }else if (currentNode.rightNode == null){
+            return currentNode;
         }
-        return currentNode;
+        return getMaxNode(currentNode);
     }
 
     /**
      * 获取值最小节点
      */
     private AVLNode getMinNode(AVLNode currentNode){
-        if (currentNode != null) {
-            currentNode = getMinNode(currentNode.getLeftNode());
+        if (currentNode == null){
+            return null;
+        }else if (currentNode.leftNode == null){
+            return currentNode;
         }
-        return currentNode;
+        return getMinNode(currentNode);
     }
 
     private AVLNode createSimpleNode(Integer val){
-        return new AVLNode(val);
+        return new AVLNode(val, 0, null, null);
     }
 
     /**
@@ -304,33 +273,33 @@ public class AVLBalanceTree {
     }
 
     /**
-     * 左左旋转
+     * 左旋转(单旋转)
      * @param avlNode 旋转之前的父节点
      * @return 旋转之后的父节点
      */
-    private AVLNode leftLeftRotate(AVLNode avlNode){
+    private AVLNode rotateWithLeft(AVLNode avlNode){
         //让node节点的
-        AVLNode newAvlNode = avlNode.getLeftNode();
-        avlNode.setLeftNode(newAvlNode.getRightNode());
-        newAvlNode.setRightNode(avlNode);
+        AVLNode newAvlNode = avlNode.leftNode;
+        avlNode.leftNode = newAvlNode.rightNode;
+        newAvlNode.rightNode = avlNode;
 
-        avlNode.setHeight(maxHeight(avlNode.getLeftNode(), avlNode.getRightNode()) + 1);
-        newAvlNode.setHeight(maxHeight(newAvlNode.getLeftNode(), newAvlNode.getRightNode()) + 1);
+        avlNode.setHeight(Math.max(height(avlNode.leftNode), height(avlNode.rightNode)) + 1);
+        newAvlNode.setHeight(Math.max(height(newAvlNode.leftNode), avlNode.getHeight()) + 1);
         return newAvlNode;
     }
 
     /**
-     * 右右旋转
+     * 右旋转(单旋转)
      * @param avlNode 旋转之前的父节点
      * @return 旋转之后的父节点
      */
-    private AVLNode rightRightRotate(AVLNode avlNode){
-        AVLNode newAvlNode = avlNode.getRightNode();
-        avlNode.setRightNode(newAvlNode.getLeftNode());
-        newAvlNode.setLeftNode(newAvlNode);
+    private AVLNode rotateWithRight(AVLNode avlNode){
+        AVLNode newAvlNode = avlNode.rightNode;
+        avlNode.rightNode = newAvlNode.leftNode;
+        newAvlNode.leftNode = avlNode;
 
-        avlNode.setHeight(maxHeight(avlNode.getLeftNode(), avlNode.getRightNode()) + 1);
-        newAvlNode.setHeight(maxHeight(newAvlNode.getLeftNode(), newAvlNode.getRightNode()) + 1);
+        avlNode.setHeight(Math.max(height(avlNode.leftNode), height(avlNode.rightNode)) + 1);
+        newAvlNode.setHeight(Math.max(height(newAvlNode.rightNode), avlNode.getHeight()) + 1);
         return newAvlNode;
     }
 
@@ -340,8 +309,8 @@ public class AVLBalanceTree {
      * @return 旋转之后的父节点
      */
     private AVLNode leftRightRotate(AVLNode avlNode){
-        avlNode.setLeftNode(rightRightRotate(avlNode.getLeftNode()));
-        return leftLeftRotate(avlNode);
+        avlNode.rightNode = rotateWithLeft(avlNode.rightNode);
+        return rotateWithRight(avlNode);
     }
 
     /**
@@ -350,8 +319,8 @@ public class AVLBalanceTree {
      * @return 旋转之后的父节点
      */
     private AVLNode rightLeftRotate(AVLNode avlNode){
-        avlNode.setRightNode(leftLeftRotate(avlNode.getRightNode()));
-        return rightRightRotate(avlNode);
+        avlNode.leftNode = rotateWithRight(avlNode.leftNode);
+        return rotateWithLeft(avlNode);
     }
 
 }
