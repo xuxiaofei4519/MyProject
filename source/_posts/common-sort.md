@@ -7,6 +7,12 @@ tags:
 categories:
  - algorithm
 ---
+
+{% cq %} 
+最近正好在学习go，因此用go实现常用的排序算法
+{% endcq %}
+<!-- more -->
+
 #### 冒泡排序
 ```go
 func BubblingSort(nums []int) []int {
