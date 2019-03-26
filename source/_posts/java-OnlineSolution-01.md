@@ -39,3 +39,6 @@ categories:
    {% qnimg /java-OnlineSolution-01/java-OnlineSolution05.jpg %}
    上面代码中如果执行到continue，上面MDCUtil.strikeFullLink()就不会被关闭，久而久之堆中内存就会占用过高，导致频繁GC，进而导致cpu飙升
    
+   
+#### 总结
+> 此次事故虽然是同事写的代码有问题，但是也是我们共同负责的系统，通过此次事故，也给我敲响警钟，代码要严谨、严谨再严谨。同时也是一次重要的技术成长经历。最后虽然java有垃圾回收机制，但是我们也要时刻谨记资源释放问题。
