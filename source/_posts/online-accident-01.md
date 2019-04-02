@@ -74,6 +74,10 @@ Caused by: java.lang.IllegalArgumentException: class com.jiupai.paybase.api.dto.
 {% qnimg /online-accident-01/online-accident-01-3.png %}
 这样防止上游依赖，最终修改后，版本升级，bug上线。
 
+#### 解决方式
+1. 删除重复字段
+2. 如果我们再子类当中必须要添加和父类一样的字段的话，可以添加transient关键字修饰，这样该字段就不会参与json序列化。
+
 #### 反思
 1. 分析问题时要果断，要带着问题去一步一步思考是什么，为什么。
 2. 下游的此次修改也给我一个警示，对外不能随便暴露API包，尤其网关类系统在使用的时候，要格外注意依赖对自身系统的侵入性，否则一不小心就会出现服务大面积崩溃。
